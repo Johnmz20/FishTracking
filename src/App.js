@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 function App() {
-  const [fishData, setFishData] = useState({
+  const [fishData, setFishData] = useState({ //fish you are currently typing into the form
     name: '',
     length: '',
     weight: '',
@@ -9,25 +9,41 @@ function App() {
     timeOfDay: 'morning',
   });
 
-  const [fishLog, setFishLog] = useState([]);
-  const [searchTerm, setSearchTerm] = useState(''); // 🆕 Search state
-  const [selectedFishIndex, setSelectedFishIndex] = useState(null);
+  const [fishLog, setFishLog] = useState([]); //list of a;; fish caught so far
+  const [searchTerm, setSearchTerm] = useState(''); //  Search state
+  const [selectedFishIndex, setSelectedFishIndex] = useState(null); // editing fish caught
+
+  useEffect(() => {
+    const savedLog = localStorage.getItem('fishLog');
+    if (savedLog) {
+      setFishLog(JSON.parse(savedLog));
+    }
+  }, []);
+  
+  useEffect(() => {
+    if (fishLog.length > 0) {
+      localStorage.setItem('fishLog', JSON.stringify(fishLog));
+    } else {
+      localStorage.removeItem('fishLog');
+    }
+  }, [fishLog]);
 
   const handleChange = (e) => {
-    setFishData({ ...fishData, [e.target.name]: e.target.value });
+    setFishData({ ...fishData, [e.target.name]: e.target.value }); // handleChange updates fishData
   };
 
+  //when clicked, checks if the fish name isn't empty
   const handleSubmit = (e) => {
     e.preventDefault();
     const cleanedName = fishData.name.trim().toLowerCase();
     if (!cleanedName) return;
-
+    // if selectedFishIndex !== null update the fish
     if (selectedFishIndex !== null) {
       const updatedLog = [...fishLog];
       updatedLog[selectedFishIndex] = {...fishData, name: cleanedName };
       setFishLog(updatedLog);
       setSelectedFishIndex(null);
-    } else {
+    } else { // add a new fish to the list
       setFishLog([
         ...fishLog,
         {...fishData, name: cleanedName}
@@ -42,7 +58,7 @@ function App() {
       timeOfDay: 'morning',
     });
   };
-
+  //remove the fish from the list on its index
   const handleDelete = (indexToDelete) => {
     setFishLog(fishLog.filter((_, index) => index !== indexToDelete));
     if (selectedFishIndex === indexToDelete) {
@@ -56,29 +72,29 @@ function App() {
       setSelectedFishIndex(null);
     }
   };
-
+  //edit the fish in the form, set selectedFishIndex to remember which fish its editing
   const handleEdit = (index) => {
     const fish = fishLog[index];
     setFishData({...fish});
     setSelectedFishIndex(index);
   };
 
-
+  //.redude() to create a new object, shows how many of each fish were caught
   const groupedFish = fishLog.reduce((acc, fish) => {
     const name = fish.name;
     acc[name] = acc[name] ? acc[name] + 1 : 1;
     return acc;
   }, {});
 
-  // 🧠 Filter detailed log based on search
+  // Filter detailed log based on search
   const filteredLog = fishLog.filter((fish) =>
     fish.name.includes(searchTerm.toLowerCase())
   );
 
   return (
-    <div style={{ maxWidth: '500px', margin: 'auto', fontFamily: 'Arial' }}>
+    <div style={{  maxWidth: '700px',margin: 'auto', fontFamily: 'Arial'}}>
       <h1>🎣 Fish Tracker</h1>
-
+      
       <form onSubmit={handleSubmit} style={{ marginBottom: '20px' }}>
         <input
           type="text"
@@ -149,22 +165,28 @@ function App() {
       <h2>Detailed Log</h2>
       <ul>
         {filteredLog.length > 0 ? (
-          filteredLog.map((fish, index) => (
+          fishLog.map((fish, index) => 
+          fish.name.includes(searchTerm.toLowerCase()) && (
             <li key={index}>
               <strong>
                 {fish.name.charAt(0).toUpperCase() + fish.name.slice(1)}
               </strong>
-              - {` ${fish.length}" • ${fish.weight} lb • ${fish.location} • ${fish.timeOfDay}`}
+              - {`${fish.length}" • ${fish.weight} lb • ${fish.location} • ${fish.timeOfDay}`}
               <button
-              onClick={() => handleEdit(index)}
-              style={{ marginLeft: '10px'}}
-              > edit</button>
+                onClick={() => handleEdit(index)}
+                style={{ marginLeft: '10px'}}
+              >
+                Edit
+              </button>
               <button
-              onClick={() => handleDelete(index)}
-              style={{marginLeft: '5px', color: 'red'}}
-              > Delete</button>
+                onClick={() => handleDelete(index)}
+                style={{ marginLeft: '5px', color:'red'}}
+              >
+                Delete
+              </button>
             </li>
-          ))
+          )
+        )
         ) : (
           <li>No fish matched your search.</li>
         )}
