@@ -92,7 +92,15 @@ function App() {
   );
 
   return (
-    <div style={{  maxWidth: '700px',margin: 'auto', fontFamily: 'Arial'}}>
+    <div style={{  
+      maxWidth: '800px',
+      margin: '40px auto',
+      padding: '20px', 
+      fontFamily: 'Arial, sans-serif',
+      backgroundColor: '#a6cbda',
+      borderRadius: '10px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+      }}>
       <h1>🎣 Fish Tracker</h1>
       
       <form onSubmit={handleSubmit} style={{ marginBottom: '20px' }}>
@@ -103,6 +111,14 @@ function App() {
           value={fishData.name}
           onChange={handleChange}
           required
+          style={{
+            padding: '10px',
+            marginBottom: '10px',
+            width: '50%',
+            borderRadius: '5px',
+            border: '1px solid #ccc',
+
+          }}
         />
         <input
           type="number"
@@ -110,6 +126,14 @@ function App() {
           placeholder="fish length"
           value={fishData.length}
           onChange={handleChange}
+          style={{
+            padding: '10px',
+            marginBottom: '10px',
+            width: '50%',
+            borderRadius: '5px',
+            border: '1px solid #ccc',
+
+          }}
         />
         <input
           type="number"
@@ -117,6 +141,14 @@ function App() {
           placeholder="fish weight"
           value={fishData.weight}
           onChange={handleChange}
+          style={{
+            padding: '10px',
+            marginBottom: '10px',
+            width: '50%',
+            borderRadius: '5px',
+            border: '1px solid #ccc',
+
+          }}
         />
         <input
           type="text"
@@ -124,14 +156,40 @@ function App() {
           placeholder="location"
           value={fishData.location}
           onChange={handleChange}
+          style={{
+            padding: '10px',
+            marginBottom: '10px',
+            width: '50%',
+            borderRadius: '5px',
+            border: '1px solid #ccc',
+
+          }}
         />
-        <select name="timeOfDay" value={fishData.timeOfDay} onChange={handleChange}>
+        <select name="timeOfDay" value={fishData.timeOfDay} onChange={handleChange}
+        style={{
+          padding: '10px',
+          marginBottom: '10px',
+          width: '50%',
+          borderRadius: '5px',
+          border: '1px solid #ccc',
+
+        }}>
           <option value="Morning">Morning</option>
           <option value="Afternoon">Afternoon</option>
           <option value="Evening">Evening</option>
           <option value="Night">Night</option>
         </select>
-        <button type="submit" style={{ padding: '8px 12px', marginTop: '10px' }}>
+        <button type="submit" 
+        style={{ 
+          padding: '10px 20px',
+          backgroundColor: selectedFishIndex !== null ? '#007bff' : '#28a745', 
+          color: '#fff',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer',
+          marginTop: '10px', 
+
+          }}>
           {selectedFishIndex !== null ? 'update Fish' : 'add Fish'}
         </button>
       </form>
@@ -167,20 +225,44 @@ function App() {
         {filteredLog.length > 0 ? (
           fishLog.map((fish, index) => 
           fish.name.includes(searchTerm.toLowerCase()) && (
-            <li key={index}>
+            <li key={index}
+            style={{
+              marginBottom: '15px',
+              padding: '10px',
+              backgroundColor: '#a6dacf',
+              borderRadius: '5px',
+              boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
+            }}
+            >
               <strong>
                 {fish.name.charAt(0).toUpperCase() + fish.name.slice(1)}
               </strong>
               - {`${fish.length}" • ${fish.weight} lb • ${fish.location} • ${fish.timeOfDay}`}
               <button
                 onClick={() => handleEdit(index)}
-                style={{ marginLeft: '10px'}}
+                style={{
+                  marginLeft: '10px',
+                  backgroundColor: '#007bff',
+                  color: '#fff',
+                  border: 'none',
+                  padding: '5px 10px',
+                  borderRadius: '5px',
+                  cursor: 'pointer'
+                }}
               >
                 Edit
               </button>
               <button
                 onClick={() => handleDelete(index)}
-                style={{ marginLeft: '5px', color:'red'}}
+                style={{ 
+                  marginLeft: '5px', 
+                  backgroundColor: '#dc3545',
+                  color: '#fff',
+                  border: 'none',
+                  padding: '5px 10px',
+                  borderRadius: '5px',
+                  cursor: 'pointer'
+                }}
               >
                 Delete
               </button>
