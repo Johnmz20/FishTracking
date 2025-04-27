@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import { Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 function App() {
     const [fishData, setFishData] = useState({
@@ -15,6 +18,7 @@ function App() {
     const [searchTerm, setSearchTerm] = useState(""); //  Search state
     const [selectedFishIndex, setSelectedFishIndex] = useState(null); // editing fish caught
     const [selectedImage, setSelectedImage] = useState(null);
+    const [isDarkMode, setIsDarkMode] = useState(false);
 
     const getFishEmoji = (name) => {
       const lowerName = name.toLowerCase();
@@ -105,6 +109,27 @@ function App() {
 
     // Filter detailed log based on search
     const filteredLog = fishLog.filter((fish) => fish.name.includes(searchTerm.toLowerCase()));
+    //shows a pie chart of each fish caught
+    const  pieData = {
+        labels: Object.keys(groupedFish).map(name => name.charAt(0).toUpperCase() + name.slice(1)),
+        datasets: [
+            {
+                label: 'fish caught',
+                data: Object.values(groupedFish),
+                backgroundColor: [
+                   '#ff6384',
+                    '#36a2eb',
+                    '#ffcd56',
+                    '#4bc0c0',
+                    '#9966ff',
+                    '#ff9f40',
+                    '#66ff66',
+                    '#ff6666',
+                ],
+                borderWidth: 1,
+            },
+        ],
+    };
 
     return (
         <div
@@ -113,14 +138,36 @@ function App() {
                 margin: "40px auto",
                 padding: "20px",
                 fontFamily: "Arial, sans-serif",
-                backgroundColor: "#a6cbda",
+                backgroundColor: isDarkMode ? '#2c2c2c' : "#a6cbda",
+                color: isDarkMode ? '#fff' : '#000',
                 borderRadius: "10px",
                 boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             }}
         >
-            <h1>🎣 Fish Tracker</h1>
 
-            <form onSubmit={handleSubmit} style={{ marginBottom: "20px" }}>
+            <h1>🎣 Fish Tracker</h1>
+            <button 
+                type="button"
+                onClick={() => setIsDarkMode(prev => !prev)}
+                 style={{
+                    padding: '8px 16px',
+                    backgroundColor: isDarkMode ? '#444' : '#ddd',
+                    color: isDarkMode ? '#fff' : '#000',
+                    border: 'none',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    marginBottom: '20px'
+                }}
+            >
+                {isDarkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
+            </button>
+            <form onSubmit={handleSubmit} 
+            style={{ 
+                marginBottom: "20px",
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                }}>
                 <input
                     type="text"
                     name="name"
@@ -131,7 +178,8 @@ function App() {
                     style={{
                         padding: "10px",
                         marginBottom: "10px",
-                        width: "50%",
+                        width: "100%",
+                        maxWidth: "400px",
                         borderRadius: "5px",
                         border: "1px solid #ccc",
                     }}
@@ -145,7 +193,8 @@ function App() {
                     style={{
                         padding: "10px",
                         marginBottom: "10px",
-                        width: "50%",
+                        width: "100%",
+                        maxWidth: "400px",
                         borderRadius: "5px",
                         border: "1px solid #ccc",
                     }}
@@ -159,7 +208,8 @@ function App() {
                     style={{
                         padding: "10px",
                         marginBottom: "10px",
-                        width: "50%",
+                        width: "100%",
+                        maxWidth: "400px",
                         borderRadius: "5px",
                         border: "1px solid #ccc",
                     }}
@@ -173,7 +223,8 @@ function App() {
                     style={{
                         padding: "10px",
                         marginBottom: "10px",
-                        width: "50%",
+                        width: "100%",
+                        maxWidth: "400px",
                         borderRadius: "5px",
                         border: "1px solid #ccc",
                     }}
@@ -185,7 +236,8 @@ function App() {
                     style={{
                         padding: "10px",
                         marginBottom: "10px",
-                        width: "50%",
+                        width: "100%",
+                        maxWidth: "400px",
                         borderRadius: "5px",
                         border: "1px solid #ccc",
                     }}
@@ -253,9 +305,25 @@ function App() {
             <p>Total Fish Caught: {fishLog.length}</p>
 
             <h2>Grouped by type</h2>
+
+            <div style ={{maxWidth: '300px', margin: '20px auto' }}>
+            <Pie data={pieData} />
+            </div>
             <ul>
                 {Object.entries(groupedFish).map(([name, count], index) => (
-                    <li key={index}>
+                    <li key={index}
+                    style={{
+                        marginBottom: "15px",
+                        padding: "10px",
+                        backgroundColor: isDarkMode ? "#444" : "#a6dacf",
+                        borderRadius: "5px",
+                        boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        textAlign: "center",
+                      }}
+                    >
                         {name.charAt(0).toUpperCase() + name.slice(1)} (x{count})
                     </li>
                 ))}
