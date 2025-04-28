@@ -29,7 +29,8 @@ Log fish catches, upload photos, view charts, and manage your catches easily —
 
 ---
 ## 🔗 Live Demo
-[Check it out here!](**https://your-vercel-link.vercel.app**)
+[Check it out here!](https://fish-tracking-8po6.vercel.app/))
+
 ---
 ## 🛠 Installation
 
