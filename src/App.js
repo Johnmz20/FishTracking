@@ -108,7 +108,12 @@ function App() {
     }, {});
 
     // Filter detailed log based on search
-    const filteredLog = fishLog.filter((fish) => fish.name.includes(searchTerm.toLowerCase()));
+    const filteredLog = fishLog
+  .filter((fish) =>
+    fish.name.includes(searchTerm.toLowerCase())
+  )
+  .sort((a, b) => a.name.localeCompare(b.name));
+
     //shows a pie chart of each fish caught
     const  pieData = {
         labels: Object.keys(groupedFish).map(name => name.charAt(0).toUpperCase() + name.slice(1)),
@@ -131,313 +136,227 @@ function App() {
         ],
     };
 
+    //reset their fish log
+    const handleClearAll = () => {
+        if(window.confirm('are you sure you want to clear all fish?')) {
+            setFishLog([]);
+            localStorage.removeItem('fishLog');
+        }
+    }
+
     return (
         <div
-            style={{
-                maxWidth: "800px",
-                margin: "40px auto",
-                padding: "20px",
-                fontFamily: "Arial, sans-serif",
-                backgroundColor: isDarkMode ? '#2c2c2c' : "#a6cbda",
-                color: isDarkMode ? '#fff' : '#000',
-                borderRadius: "10px",
-                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-            }}
+          style={{
+            maxWidth: "800px",
+            margin: "40px auto",
+            padding: "20px",
+            fontFamily: "Arial, sans-serif",
+            backgroundColor: isDarkMode ? "#2c2c2c" : "#a6cbda",
+            color: isDarkMode ? "#fff" : "#000",
+            borderRadius: "10px",
+            boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+          }}
         >
-
-            <h1>🎣 Fish Tracker</h1>
-            <button 
-                type="button"
-                onClick={() => setIsDarkMode(prev => !prev)}
-                 style={{
-                    padding: '8px 16px',
-                    backgroundColor: isDarkMode ? '#444' : '#ddd',
-                    color: isDarkMode ? '#fff' : '#000',
-                    border: 'none',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                    marginBottom: '20px'
-                }}
-            >
-                {isDarkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
-            </button>
-            <form onSubmit={handleSubmit} 
+          <h1>🎣 Fish Tracker</h1>
+    
+          <button
+            type="button"
+            onClick={() => setIsDarkMode(prev => !prev)}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: isDarkMode ? '#444' : '#ddd',
+              color: isDarkMode ? '#fff' : '#000',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+              marginBottom: '20px',
+            }}
+          >
+            {isDarkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
+          </button>
+          <button 
+            type="button"
+            onClick={handleClearAll}
+            style={{
+                padding: '8px 16px',
+                backgroundColor: '#dc3545',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                marginBottom: '20px',
+                marginLeft: '10px'
+            }}
+          >
+          🧹 Clear All Fish
+          </button>
+    
+          <form 
+            onSubmit={handleSubmit} 
             style={{ 
-                marginBottom: "20px",
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                }}>
-                <input
-                    type="text"
-                    name="name"
-                    placeholder="fish name"
-                    value={fishData.name}
-                    onChange={handleChange}
-                    required
-                    style={{
-                        padding: "10px",
-                        marginBottom: "10px",
-                        width: "100%",
-                        maxWidth: "400px",
-                        borderRadius: "5px",
-                        border: "1px solid #ccc",
-                    }}
-                />
-                <input
-                    type="number"
-                    name="length"
-                    placeholder="fish length"
-                    value={fishData.length}
-                    onChange={handleChange}
-                    style={{
-                        padding: "10px",
-                        marginBottom: "10px",
-                        width: "100%",
-                        maxWidth: "400px",
-                        borderRadius: "5px",
-                        border: "1px solid #ccc",
-                    }}
-                />
-                <input
-                    type="number"
-                    name="weight"
-                    placeholder="fish weight"
-                    value={fishData.weight}
-                    onChange={handleChange}
-                    style={{
-                        padding: "10px",
-                        marginBottom: "10px",
-                        width: "100%",
-                        maxWidth: "400px",
-                        borderRadius: "5px",
-                        border: "1px solid #ccc",
-                    }}
-                />
-                <input
-                    type="text"
-                    name="location"
-                    placeholder="location"
-                    value={fishData.location}
-                    onChange={handleChange}
-                    style={{
-                        padding: "10px",
-                        marginBottom: "10px",
-                        width: "100%",
-                        maxWidth: "400px",
-                        borderRadius: "5px",
-                        border: "1px solid #ccc",
-                    }}
-                />
-                <select
-                    name="timeOfDay"
-                    value={fishData.timeOfDay}
-                    onChange={handleChange}
-                    style={{
-                        padding: "10px",
-                        marginBottom: "10px",
-                        width: "100%",
-                        maxWidth: "400px",
-                        borderRadius: "5px",
-                        border: "1px solid #ccc",
-                    }}
-                >
-                    <option value="Morning">Morning</option>
-                    <option value="Afternoon">Afternoon</option>
-                    <option value="Evening">Evening</option>
-                    <option value="Night">Night</option>
-                </select>
-                <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                        const file = e.target.files[0];
-                        if (file) {
-                            const reader = new FileReader();
-                            reader.onloadend = () => {
-                                setFishData((prevData) => ({
-                                    ...prevData,
-                                    image: reader.result,
-                                }));
-                            };
-                            reader.readAsDataURL(file);
-                        }
-                    }}
-                    style={{
-                        padding: "10px",
-                        marginBottom: "10px",
-                        width: "100%",
-                        borderRadius: "5px",
-                        border: "1px solid #ccc",
-                    }}
-                />
-                <button
-                    type="submit"
-                    style={{
-                        padding: "10px 20px",
-                        backgroundColor: selectedFishIndex !== null ? "#007bff" : "#28a745",
-                        color: "#fff",
-                        border: "none",
-                        borderRadius: "5px",
-                        cursor: "pointer",
-                        marginTop: "10px",
-                    }}
-                >
-                    {selectedFishIndex !== null ? "update Fish" : "add Fish"}
-                </button>
-            </form>
-
-            {/* 🔍 Search Bar */}
+              marginBottom: "20px",
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
             <input
-                type="text"
-                placeholder="Search fish name..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                style={{
-                    padding: "8px",
-                    width: "100%",
-                    marginBottom: "20px",
-                    borderRadius: "4px",
-                    border: "1px solid #ccc",
-                }}
+              type="text"
+              name="name"
+              placeholder="Fish Name"
+              value={fishData.name}
+              onChange={handleChange}
+              required
+              style={{ padding: "10px", marginBottom: "10px", width: "100%", maxWidth: "400px", borderRadius: "5px", border: "1px solid #ccc" }}
             />
-
-            <p>Total Fish Caught: {fishLog.length}</p>
-
-            <h2>Grouped by type</h2>
-
-            <div style ={{maxWidth: '300px', margin: '20px auto' }}>
+            <input
+              type="number"
+              name="length"
+              placeholder="Fish Length"
+              value={fishData.length}
+              onChange={handleChange}
+              style={{ padding: "10px", marginBottom: "10px", width: "100%", maxWidth: "400px", borderRadius: "5px", border: "1px solid #ccc" }}
+            />
+            <input
+              type="number"
+              name="weight"
+              placeholder="Fish Weight"
+              value={fishData.weight}
+              onChange={handleChange}
+              style={{ padding: "10px", marginBottom: "10px", width: "100%", maxWidth: "400px", borderRadius: "5px", border: "1px solid #ccc" }}
+            />
+            <input
+              type="text"
+              name="location"
+              placeholder="Location"
+              value={fishData.location}
+              onChange={handleChange}
+              style={{ padding: "10px", marginBottom: "10px", width: "100%", maxWidth: "400px", borderRadius: "5px", border: "1px solid #ccc" }}
+            />
+            <select
+              name="timeOfDay"
+              value={fishData.timeOfDay}
+              onChange={handleChange}
+              style={{ padding: "10px", marginBottom: "10px", width: "100%", maxWidth: "400px", borderRadius: "5px", border: "1px solid #ccc" }}
+            >
+              <option value="Morning">Morning</option>
+              <option value="Afternoon">Afternoon</option>
+              <option value="Evening">Evening</option>
+              <option value="Night">Night</option>
+            </select>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onloadend = () => {
+                    setFishData(prev => ({ ...prev, image: reader.result }));
+                  };
+                  reader.readAsDataURL(file);
+                }
+              }}
+              style={{ padding: "10px", marginBottom: "10px", width: "100%", borderRadius: "5px", border: "1px solid #ccc" }}
+            />
+            <button
+              type="submit"
+              style={{ padding: "10px 20px", backgroundColor: selectedFishIndex !== null ? "#007bff" : "#28a745", color: "#fff", border: "none", borderRadius: "5px", cursor: "pointer", marginTop: "10px" }}
+            >
+              {selectedFishIndex !== null ? "Update Fish" : "Add Fish"}
+            </button>
+          </form>
+    
+          <input
+            type="text"
+            placeholder="Search fish name..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ padding: "8px", width: "100%", marginBottom: "20px", borderRadius: "4px", border: "1px solid #ccc" }}
+          />
+    
+          <p>Total Fish Caught: {fishLog.length}</p>
+    
+          <h2>Grouped by type</h2>
+    
+          <div style={{ maxWidth: "300px", margin: "20px auto" }}>
             <Pie data={pieData} />
+          </div>
+    
+          <ul style={{ listStyleType: "none", padding: 0 }}>
+            {fishLog.length === 0 ? (
+              <li style={{ textAlign: "center", marginTop: "20px", fontSize: "18px" }}>
+                🎣 No fish caught yet! Add your first catch above.
+              </li>
+            ) : filteredLog.length > 0 ? (
+              filteredLog.map((fish, index) => (
+                <li key={index}
+                  style={{
+                    marginBottom: "15px",
+                    padding: "10px",
+                    backgroundColor: isDarkMode ? "#444" : "#a6dacf",
+                    borderRadius: "5px",
+                    boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+                    textAlign: "center"
+                  }}
+                >
+                  {fish.image && (
+                    <img
+                      src={fish.image}
+                      alt={fish.name}
+                      style={{ maxWidth: "100px", height: "auto", marginBottom: "10px", borderRadius: "8px", display: "block", margin: "0 auto" }}
+                      onClick={() => setSelectedImage(fish.image)}
+                    />
+                  )}
+                  <strong>{getFishEmoji(fish.name)} {fish.name.charAt(0).toUpperCase() + fish.name.slice(1)}</strong> - {fish.length}" • {fish.weight} lb •{" "}
+                  <a href={`https://www.google.com/maps/search/${encodeURIComponent(fish.location)}`} target="_blank" rel="noopener noreferrer" style={{ color: "#007bff", textDecoration: "underline" }}>
+                    {fish.location}
+                  </a> • {fish.timeOfDay}
+                  <div>
+                    <button onClick={() => handleEdit(index)} style={{ margin: "10px 5px 0 0", backgroundColor: "#007bff", color: "#fff", border: "none", padding: "5px 10px", borderRadius: "5px", cursor: "pointer" }}>
+                      Edit
+                    </button>
+                    <button onClick={() => handleDelete(index)} style={{ backgroundColor: "#dc3545", color: "#fff", border: "none", padding: "5px 10px", borderRadius: "5px", cursor: "pointer" }}>
+                      Delete
+                    </button>
+                  </div>
+                </li>
+              ))
+            ) : (
+              <li style={{ textAlign: "center", marginTop: "20px", fontSize: "18px" }}>
+                No fish matched your search.
+              </li>
+            )}
+          </ul>
+    
+          {selectedImage && (
+            <div
+              onClick={() => setSelectedImage(null)}
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: "rgba(0,0,0,0.8)",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                zIndex: 1000,
+                cursor: "pointer",
+                transition: "opacity 0.3s ease",
+                opacity: selectedImage ? 1 : 0,
+              }}
+            >
+              <img
+                src={selectedImage}
+                alt="Expanded Fish"
+                style={{ maxWidth: "90%", maxHeight: "90%", borderRadius: "10px", boxShadow: "0 0 10px white", transition: "transform 0.3s ease" }}
+              />
             </div>
-            <ul>
-                {Object.entries(groupedFish).map(([name, count], index) => (
-                    <li key={index}
-                    style={{
-                        marginBottom: "15px",
-                        padding: "10px",
-                        backgroundColor: isDarkMode ? "#444" : "#a6dacf",
-                        borderRadius: "5px",
-                        boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        textAlign: "center",
-                      }}
-                    >
-                        {name.charAt(0).toUpperCase() + name.slice(1)} (x{count})
-                    </li>
-                ))}
-            </ul>
-
-            <h2>Detailed Log</h2>
-            <ul>
-                {selectedImage && (
-                    <div
-                        onClick={() => setSelectedImage(null)}
-                        style={{
-                            position: "fixed",
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            backgroundColor: "rgba(0,0,0,0.8)",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            zIndex: 1000,
-                            cursor: "pointer",
-                        }}
-                    >
-                        <img
-                            src={selectedImage}
-                            alt="Expanded Fish"
-                            style={{
-                                maxWidth: "90%",
-                                maxHeight: "90%",
-                                borderRadius: "10px",
-                                boxShadow: "0 0 10px white",
-                            }}
-                        />
-                    </div>
-                )}
-                {filteredLog.length > 0 ? (
-                    fishLog.map(
-                        (fish, index) =>
-                            fish.name.includes(searchTerm.toLowerCase()) && (
-                                <li
-                                    key={index}
-                                    style={{
-                                        marginBottom: "15px",
-                                        padding: "10px",
-                                        backgroundColor: "#a6dacf",
-                                        borderRadius: "5px",
-                                        boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-                                    }}
-                                >
-                                    {fish.image && (
-                                        <img
-                                            src={fish.image}
-                                            alt={fish.name}
-                                            style={{
-                                                maxWidth: "100px",
-                                                height: "auto",
-                                                marginBottom: "10px",
-                                                borderRadius: "8px",
-                                                display: "block",
-                                            }}
-                                            onClick={() => setSelectedImage(fish.image)}
-                                        />
-                                    )}
-                                    <strong>{getFishEmoji(fish.name)} {fish.name.charAt(0).toUpperCase() + fish.name.slice(1)}</strong>- {`${fish.length}" • ${fish.weight} lb • `}
-                                    <a
-                                        href={`https://www.google.com/maps/search/${encodeURIComponent(fish.location)}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        style={{
-                                            color: "#007bff",
-                                            textDecoration: "underline",
-                                        }}
-                                    >
-                                        {`${fish.location}`}
-                                    </a>
-                                    {` • ${fish.timeOfDay}`}
-                                    <button
-                                        onClick={() => handleEdit(index)}
-                                        style={{
-                                            marginLeft: "10px",
-                                            backgroundColor: "#007bff",
-                                            color: "#fff",
-                                            border: "none",
-                                            padding: "5px 10px",
-                                            borderRadius: "5px",
-                                            cursor: "pointer",
-                                        }}
-                                    >
-                                        Edit
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(index)}
-                                        style={{
-                                            marginLeft: "5px",
-                                            backgroundColor: "#dc3545",
-                                            color: "#fff",
-                                            border: "none",
-                                            padding: "5px 10px",
-                                            borderRadius: "5px",
-                                            cursor: "pointer",
-                                        }}
-                                    >
-                                        Delete
-                                    </button>
-                                </li>
-                            )
-                    )
-                ) : (
-                    <li>No fish matched your search.</li>
-                )}
-            </ul>
+          )}
         </div>
-    );
-}
-
-export default App;
+      );
+    }
+    
+    export default App;
