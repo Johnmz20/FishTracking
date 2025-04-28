@@ -44,6 +44,3 @@ Start the development server:
 npm run dev
 
 The app should open automatically at http://localhost:5173/ if you are using Vite.
-
-🧑‍💻 Author John Meraz
-GitHub: @Johnmz20
