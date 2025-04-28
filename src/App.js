@@ -14,7 +14,7 @@ function App() {
         image: "",
     });
 
-    const [fishLog, setFishLog] = useState([]); //list of a;; fish caught so far
+    const [fishLog, setFishLog] = useState([]); //list of all fish caught so far
     const [searchTerm, setSearchTerm] = useState(""); //  Search state
     const [selectedFishIndex, setSelectedFishIndex] = useState(null); // editing fish caught
     const [selectedImage, setSelectedImage] = useState(null);
