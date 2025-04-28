@@ -28,7 +28,9 @@ Log fish catches, upload photos, view charts, and manage your catches easily —
 - LocalStorage API
 
 ---
-
+## 🔗 Live Demo
+[Check it out here!](https://your-vercel-link.vercel.app)
+---
 ## 🛠 Installation
 
 Clone the repository:
